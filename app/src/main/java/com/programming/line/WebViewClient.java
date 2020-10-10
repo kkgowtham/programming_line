@@ -10,7 +10,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 
 import androidx.annotation.RequiresApi;
-import androidx.browser.customtabs.CustomTabsIntent;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class WebViewClient extends android.webkit.WebViewClient {
 
@@ -26,15 +28,18 @@ public class WebViewClient extends android.webkit.WebViewClient {
     }
 
     private boolean handleUrl(String url) {
-        if (!url.equals("https://programmingline.com")){
-//            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-//            CustomTabsIntent customTabsIntent = builder.build();
-//            customTabsIntent.launchUrl(context, Uri.parse(url));
-            Intent intent =new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
-            context.startActivity(intent);
-            return true;
+        try {
+            URL mUrl = new URL(url);
+            if (!mUrl.getHost().equals("programmingline.com")) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                context.startActivity(intent);
+                return true;
+            }
+            return false;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
         return false;
     }

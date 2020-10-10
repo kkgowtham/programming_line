@@ -1,21 +1,23 @@
 package com.programming.line;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationOpenResult;
@@ -44,14 +46,21 @@ public class MainActivity extends AppCompatActivity implements WebViewListener {
         noInternetLayout = findViewById(R.id.no_internet_layout);
         webView = findViewById(R.id.webview);
         showSplashScreen(true);
-        webView.setWebViewClient(new WebViewClient(this,this));
-        webView.setWebChromeClient(new WebChromeClient(){
+        webView.setWebViewClient(new WebViewClient(this, this));
+        webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
                 progressBar.setProgress(newProgress);
             }
         });
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
         loadWebview();
         swipeRefreshLayout = findViewById(R.id.pullfresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -59,8 +68,7 @@ public class MainActivity extends AppCompatActivity implements WebViewListener {
             swipeRefreshLayout.setRefreshing(false);
         });
         webView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            if (webView.getScrollY() == 0)
-            {
+            if (webView.getScrollY() == 0) {
                 swipeRefreshLayout.setEnabled(true);
             }else{
                 swipeRefreshLayout.setEnabled(false);
